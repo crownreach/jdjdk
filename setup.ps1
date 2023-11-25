@@ -149,7 +149,7 @@ Begin
     }
 
     function Rerun-Script {
-        iex "& { Set-Location $( $dotfilesDir ); $(irm https://raw.githack.com/$dotfilesRepo/main/setup.ps1) }"
+        iex "& { Set-Location $( $dotfilesDir ); . { $(irm https://raw.githack.com/$dotfilesRepo/main/setup.ps1) } }"
     }
 
     function Clone {
