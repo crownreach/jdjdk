@@ -215,10 +215,12 @@ Begin
         return
     }
 
-    if ($( Split-Path -Path $PSCommandPath -Parent ) -eq $dotfilesDir) {
-        Write-Host "You're running this script on dotfiles folder..."
-        write-host "$( Split-Path -Path $PSCommandPath -Parent) -  $dotfilesDir"
-        Rerun-Script
+    if ($PSCommandPath) {
+        if ($( Split-Path -Path $PSCommandPath -Parent ) -eq $dotfilesDir) {
+            Write-Host "You're running this script on dotfiles folder..."
+            write-host "$( Split-Path -Path $PSCommandPath -Parent) -  $dotfilesDir"
+            Rerun-Script
+        }
     }
 
     if (-not (Get-Command "git" -ErrorAction SilentlyContinue)) {
