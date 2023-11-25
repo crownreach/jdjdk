@@ -150,12 +150,18 @@ Begin
     function Update-Script {
         $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.IO.Path]::GetRandomFileName())
 
-        if(-not (Test-Path $tempDir)) {
+        if (-not (Test-Path $tempDir)) {
             New-Item -ItemType Directory -Path $tempDir | Out-Null
         }
 
-        Copy-Item $( Join-Path $dotfilesDir "setup.ps1" ) $( Join-Path $tempDir "setup.ps1" )
-        & $( Join-Path $tempDir "setup.ps1" )
+        $setupScriptPath = Join-Path $dotfilesDir "setup.ps1"
+        $tempScriptPath = Join-Path $tempDir "setup.ps1"
+
+        if (-not (Test-Path $tempScriptPath)) {
+            Copy-Item $setupScriptPath $tempScriptPath
+            Start-Process powershell.exe -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File '$tempScriptPath'"
+            exit 1
+        }
     }
 
     function Clone {
@@ -214,6 +220,10 @@ Begin
         return
     }
 
+    if ((Get-Location).Path -eq $dotfilesDir) {
+        Write-Host "You're running this script on dotfiles folder...."
+        Update-Script
+    }
 
     if (-not (Get-Command "git" -ErrorAction SilentlyContinue)) {
         Write-Host "Git is not installed..."
