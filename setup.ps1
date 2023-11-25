@@ -221,7 +221,7 @@ Begin
     }
 
     if ((Get-Location).Path -eq $dotfilesDir) {
-        Write-Host "You're running this script on dotfiles folder...."
+        Write-Host "You're running this script on dotfiles folder..."
         Update-Script
     }
 
