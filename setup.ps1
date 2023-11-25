@@ -175,9 +175,9 @@ Begin
             Push-Location $dotfilesDir
 
             $remoteUrl = git config --get remote.origin.url
-            if ((Get-Location).Path -eq $ENV:DOTFILES_DIR) {
+            if ((Get-Location).Path -eq $dotfilesDir) {
                 if ($remoteUrl -match "^(https?|git)://[^\s/$.?#].[^\s]*$") {
-                    if ($remoteUrl -eq $DOTFILES_URL) {
+                    if ($remoteUrl -eq $dotfilesDir) {
                         Update
                     } else {
                         Clone
