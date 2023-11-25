@@ -15,7 +15,7 @@ Begin
     $dotfilesRepo = "https://github.com/crownreach/jdjdk"
     $dotfilesDir = Join-Path $env:USERPROFILE "dotfiles"
 
-	. $PSScriptRoot\powershell\common.ps1
+	. $dotfilesDir\powershell\common.ps1
 
 
 	function SetTimeZone {
@@ -171,25 +171,23 @@ Begin
     }
 
     function Check {
-        if (Get-Command "git" -ErrorAction SilentlyContinue) {
-            If (Test-Path $dotfilesDir) {
-                Push-Location $dotfilesDir
+        If (Test-Path $dotfilesDir) {
+            Push-Location $dotfilesDir
 
-                $remoteUrl = git config --get remote.origin.url
-                if ((Get-Location).Path -eq $ENV:DOTFILES_DIR) {
-                    if ($remoteUrl -match "^(https?|git)://[^\s/$.?#].[^\s]*$") {
-                        if ($remoteUrl -eq $DOTFILES_URL) {
-                            Update
-                        } else {
-                            Clone
-                        }
+            $remoteUrl = git config --get remote.origin.url
+            if ((Get-Location).Path -eq $ENV:DOTFILES_DIR) {
+                if ($remoteUrl -match "^(https?|git)://[^\s/$.?#].[^\s]*$") {
+                    if ($remoteUrl -eq $DOTFILES_URL) {
+                        Update
                     } else {
                         Clone
                     }
+                } else {
+                    Clone
                 }
-            } Else {
-                Clone
             }
+        } Else {
+            Clone
         }
     }
 } Process {
@@ -207,6 +205,12 @@ Begin
         return
     }
 
+
+    if (-not (Get-Command "git" -ErrorAction SilentlyContinue)) {
+        Write-Host "Git is not installed..."
+        exit 1
+    }
+    
     Check
 
     if (-not (IsElevated -Warn)) {
