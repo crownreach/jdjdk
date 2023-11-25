@@ -1,3 +1,4 @@
+
 [CmdletBinding(SupportsShouldProcess=$true)]
 
 param (
@@ -12,7 +13,7 @@ Begin
     $ErrorActionPreference = "Continue"
     [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]'Ssl3,Tls,Tls11,Tls12';
 
-    $dotfilesRepo = "https://github.com/crownreach/jdjdk"
+    $dotfilesRepo = "crownreach/jdjdk"
     $dotfilesDir = Join-Path $env:USERPROFILE "dotfiles"
 
     if ((Get-Location).Path -eq $dotfilesDir) {
@@ -147,40 +148,22 @@ Begin
         Enable-MMAgent -ApplicationPreLaunch -MemoryCompression
     }
 
-    function Update-Script {
-        $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.IO.Path]::GetRandomFileName())
-
-        if (-not (Test-Path $tempDir)) {
-            New-Item -ItemType Directory -Path $tempDir | Out-Null
-        }
-
-        $setupScriptPath = Join-Path $dotfilesDir "setup.ps1"
-        $tempScriptPath = Join-Path $tempDir "setup.ps1"
-
-
-        if (-not (Test-Path $tempScriptPath)) {
-            Copy-Item $setupScriptPath $tempScriptPath
-            $scriptBlock = {
-                Set-Location -Path $using:dotfilesDir
-                & $using:tempScriptPath
-            }
-            Start-Process powershell.exe -NoProfile -ExecutionPolicy Bypass -Command $scriptBlock
-            exit 1
-        }
+    function Rerun-Script {
+        iex "& { Set-Location $( $dotfilesDir ); $(irm https://raw.githack.com/$dotfilesRepo/main/setup.ps1) }"
     }
 
     function Clone {
         Pop-Location
         Remove-Item $dotfilesDir -Recurse -Force -ErrorAction SilentlyContinue
-        git clone --recurse-submodules $dotfilesRepo $dotfilesDir
+        git clone --recurse-submodules "https://github.com/$dotfilesRepo" $dotfilesDir
         Push-Location $dotfilesDir
-        Update-Script
+        Rerun-Script
     }
 
     function Update {
         git -C $dotfilesDir submodule sync --quiet --recursive
         git submodule update --init --recursive $dotfilesDir
-        Update-Script
+        Rerun-Script
     }
 
     function Check {
@@ -227,7 +210,7 @@ Begin
 
     if ((Get-Location).Path -eq $dotfilesDir) {
         Write-Host "You're running this script on dotfiles folder..."
-        Update-Script
+        Rerun-Script
     }
 
     if (-not (Get-Command "git" -ErrorAction SilentlyContinue)) {
