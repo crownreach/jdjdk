@@ -179,7 +179,7 @@ Begin
             $remoteUrl = git config --get remote.origin.url
             if ((Get-Location).Path -eq $dotfilesDir) {
                 if ($remoteUrl -match "^(https?|git)://[^\s/$.?#].[^\s]*$") {
-                    if ($remoteUrl -eq $dotfilesDir) {
+                    if ($remoteUrl -eq $dotfilesRepo) {
                         $status = git -c status.submodulesummary=1 status
                         if ($status -match "Your branch is behind") {
                             Write-Host "Updating Dotfiles..."
