@@ -180,15 +180,19 @@ Begin
             if ((Get-Location).Path -eq $dotfilesDir) {
                 if ($remoteUrl -match "^(https?|git)://[^\s/$.?#].[^\s]*$") {
                     if ($remoteUrl -eq $dotfilesDir) {
+                        Write-Host "Update Dotfiles..."
                         Update
                     } else {
+                        Write-Host "Current dotfiles is not from the repo..."
                         Clone
                     }
                 } else {
+                    Write-Host "Dotfiles folder is not initialized..."
                     Clone
                 }
             }
         } Else {
+            Write-Host "Dotfiles is not exist, creating one..."
             Clone
         }
     }
@@ -212,7 +216,7 @@ Begin
         Write-Host "Git is not installed..."
         exit 1
     }
-    
+
     Check
 
     if (-not (IsElevated -Warn)) {
