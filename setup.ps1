@@ -180,8 +180,11 @@ Begin
             if ((Get-Location).Path -eq $dotfilesDir) {
                 if ($remoteUrl -match "^(https?|git)://[^\s/$.?#].[^\s]*$") {
                     if ($remoteUrl -eq $dotfilesDir) {
-                        Write-Host "Update Dotfiles..."
-                        Update
+                        $status = git -c status.submodulesummary=1 status
+                        if ($status -match "Your branch is behind") {
+                            Write-Host "Updating Dotfiles..."
+                            Update
+                        }
                     } else {
                         Write-Host "Current dotfiles is not from the repo..."
                         Clone
