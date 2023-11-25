@@ -15,7 +15,7 @@ Begin
     $dotfilesRepo = "https://github.com/crownreach/jdjdk"
     $dotfilesDir = Join-Path $env:USERPROFILE "dotfiles"
 
-	if(Test-Path $dotfilesDir) {
+    if ((Get-Location).Path -eq $dotfilesDir) {
         . $dotfilesDir\powershell\common.ps1
     }
 
@@ -157,9 +157,14 @@ Begin
         $setupScriptPath = Join-Path $dotfilesDir "setup.ps1"
         $tempScriptPath = Join-Path $tempDir "setup.ps1"
 
+
         if (-not (Test-Path $tempScriptPath)) {
             Copy-Item $setupScriptPath $tempScriptPath
-            Start-Process powershell.exe -ArgumentList "-NoProfile -ExecutionPolicy Bypass -File '$tempScriptPath'"
+            $scriptBlock = {
+                Set-Location -Path $using:dotfilesDir
+                & $using:tempScriptPath
+            }
+            Start-Process powershell.exe -NoProfile -ExecutionPolicy Bypass -Command $scriptBlock
             exit 1
         }
     }
