@@ -149,7 +149,14 @@ Begin
     }
 
     function Rerun-Script {
-        iex "& { Set-Location $( $dotfilesDir ); . { $(irm https://raw.githack.com/$dotfilesRepo/main/setup.ps1) } }"
+        $tempDir = Join-Path ([System.IO.Path]::GetTempPath()) ([System.IO.Path]::GetRandomFileName())
+
+        if(-not (Test-Path $tempDir)) {
+            New-Item -ItemType Directory -Path $tempDir | Out-Null
+        }
+
+        Invoke-WebRequest -Uri "https://raw.githack.com/$dotfilesRepo/main/setup.ps1" -OutFile $( Join-Path $tempDir "setup.ps1" )
+        iex "& { Set-Location $( $dotfilesDir ); . $( Join-Path $tempDir "setup.ps1" ) }"
     }
 
     function Clone {
@@ -210,6 +217,7 @@ Begin
 
     if ($( Split-Path -Path $PSCommandPath -Parent ) -eq $dotfilesDir) {
         Write-Host "You're running this script on dotfiles folder..."
+        write-host "$( Split-Path -Path $PSCommandPath -Parent) -  $dotfilesDir"
         Rerun-Script
     }
 
