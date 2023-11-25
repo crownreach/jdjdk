@@ -15,7 +15,9 @@ Begin
     $dotfilesRepo = "https://github.com/crownreach/jdjdk"
     $dotfilesDir = Join-Path $env:USERPROFILE "dotfiles"
 
-	. $dotfilesDir\powershell\common.ps1
+	
+        if(-not (Test-Path $tempDir)) {
+            . $dotfilesDir\powershell\common.ps1
 
 
 	function SetTimeZone {
