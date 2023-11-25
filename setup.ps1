@@ -12,7 +12,7 @@ Begin
     $ErrorActionPreference = "Continue"
     [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]'Ssl3,Tls,Tls11,Tls12';
 
-    $dotfilesRepo = "https://github.com/lazuee/dotfiles"
+    $dotfilesRepo = "https://github.com/crownreach/jdjdk"
     $dotfilesDir = Join-Path $env:USERPROFILE "dotfiles"
 
 	. $PSScriptRoot\powershell\common.ps1
