@@ -208,7 +208,7 @@ Begin
         return
     }
 
-    if ((Get-Location).Path -eq $dotfilesDir) {
+    if ($( Split-Path -Path $PSCommandPath -Parent ) -eq $dotfilesDir) {
         Write-Host "You're running this script on dotfiles folder..."
         Rerun-Script
     }
@@ -221,7 +221,6 @@ Begin
     Check
 
     if (-not (IsElevated -Warn)) {
-        write-host $myInvocation.MyCommand.Definition
         $process = New-Object System.Diagnostics.ProcessStartInfo "PowerShell"
         $process.Arguments = $myInvocation.MyCommand.Definition
         $process.Verb = "runas"
